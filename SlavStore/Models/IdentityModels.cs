@@ -1,4 +1,6 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -16,6 +18,19 @@ namespace SlavStore.Models
             // Add custom user claims here
             return userIdentity;
         }
+
+        public ApplicationUser()
+        {
+            this.ItemsBought = new HashSet<Item>();
+        }
+
+        public string FullName { get; set; }
+
+        public virtual Store MyStore { get; set; }
+
+       public virtual ICollection<Item> ItemsBought { get; set; }
+
+
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
