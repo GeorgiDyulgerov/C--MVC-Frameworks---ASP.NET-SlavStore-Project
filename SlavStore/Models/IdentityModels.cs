@@ -26,6 +26,8 @@ namespace SlavStore.Models
 
         public string FullName { get; set; }
 
+        public string Address { get; set; }
+
         public virtual Store MyStore { get; set; }
 
        public virtual ICollection<Item> ItemsBought { get; set; }
@@ -44,5 +46,11 @@ namespace SlavStore.Models
         {
             return new ApplicationDbContext();
         }
+
+        public System.Data.Entity.DbSet<SlavStore.Models.Item> Items { get; set; }
+
+        public System.Data.Entity.DbSet<SlavStore.Models.Store> Stores { get; set; }
+
+        public System.Data.Entity.DbSet<SlavStore.Models.Category> Categories { get; set; }
     }
 }

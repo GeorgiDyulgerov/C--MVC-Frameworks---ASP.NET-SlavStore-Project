@@ -196,8 +196,11 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ItemsController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\StoresController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -209,6 +212,18 @@
     <Compile Include="Migrations\201704141728472_storeUser.Designer.cs">
       <DependentUpon>201704141728472_storeUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201704141741029_added-anotations.cs" />
+    <Compile Include="Migrations\201704141741029_added-anotations.Designer.cs">
+      <DependentUpon>201704141741029_added-anotations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704141756308_address.cs" />
+    <Compile Include="Migrations\201704141756308_address.Designer.cs">
+      <DependentUpon>201704141756308_address.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704181229347_change01.cs" />
+    <Compile Include="Migrations\201704181229347_change01.Designer.cs">
+      <DependentUpon>201704181229347_change01.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Category.cs" />
@@ -218,6 +233,7 @@
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Store.cs" />
+    <Compile Include="Models\ViewModels\CreateItemViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -279,6 +295,22 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Items\Create.cshtml" />
+    <Content Include="Views\Items\Delete.cshtml" />
+    <Content Include="Views\Items\Details.cshtml" />
+    <Content Include="Views\Items\Edit.cshtml" />
+    <Content Include="Views\Items\Index.cshtml" />
+    <Content Include="Views\Stores\Create.cshtml" />
+    <Content Include="Views\Stores\Delete.cshtml" />
+    <Content Include="Views\Stores\Details.cshtml" />
+    <Content Include="Views\Stores\Edit.cshtml" />
+    <Content Include="Views\Stores\Index.cshtml" />
+    <Content Include="Views\Categories\Create.cshtml" />
+    <Content Include="Views\Categories\Delete.cshtml" />
+    <Content Include="Views\Categories\Details.cshtml" />
+    <Content Include="Views\Categories\Edit.cshtml" />
+    <Content Include="Views\Categories\Index.cshtml" />
+    <Content Include="Views\Shared\_AdminMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -297,6 +329,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201704141728472_storeUser.resx">
       <DependentUpon>201704141728472_storeUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704141741029_added-anotations.resx">
+      <DependentUpon>201704141741029_added-anotations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704141756308_address.resx">
+      <DependentUpon>201704141756308_address.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704181229347_change01.resx">
+      <DependentUpon>201704181229347_change01.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

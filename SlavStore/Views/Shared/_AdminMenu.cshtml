@@ -1,0 +1,12 @@
+﻿@using Microsoft.AspNet.Identity
+@if (User.IsInRole("Administrator"))
+{
+    <li class="nav navbar-nav dropdown" role="presentation" style="font-weight: bold">
+        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="False" href="#">Admin menu<span class="caret"></span></a>
+        <ul class="dropdown-menu" role="menu">
+            <li>@Html.ActionLink("Categories", "Index", "Categories")</li>
+            <li>@Html.ActionLink("Items", "Index", "Items")</li>
+            <li>@Html.ActionLink("Stores", "Index", "Stores")</li>
+        </ul>
+    </li>
+}
