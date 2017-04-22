@@ -82,6 +82,13 @@ namespace SlavStore.Controllers
             {
                 return HttpNotFound();
             }
+            string currentUserId = User.Identity.GetUserId();
+            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == currentUserId);
+            if (store.Owner != user)
+            {
+                return RedirectToAction("Index");
+            }
+
             return View(store);
         }
 
@@ -90,10 +97,15 @@ namespace SlavStore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name")] Store store)
+        public ActionResult Edit([Bind(Include = "Id,Name",Exclude = "Owner")] Store store)
         {
-            if (ModelState.IsValid)
+            string currentUserId = User.Identity.GetUserId();
+            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == currentUserId);
+            store.Owner = user;
+
+            if (store.Id!=null && store.Name!=null && store.Owner!=null)
             {
+
                 db.Entry(store).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -113,6 +125,12 @@ namespace SlavStore.Controllers
             {
                 return HttpNotFound();
             }
+            string currentUserId = User.Identity.GetUserId();
+            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == currentUserId);
+            if (store.Owner != user)
+            {
+                return RedirectToAction("Index");
+            }
             return View(store);
         }
 
@@ -122,6 +140,12 @@ namespace SlavStore.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Store store = db.Stores.Find(id);
+            string currentUserId = User.Identity.GetUserId();
+            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == currentUserId);
+            if (store.Owner != user)
+            {
+                return RedirectToAction("Index");
+            }
             db.Stores.Remove(store);
             db.SaveChanges();
             return RedirectToAction("Index");

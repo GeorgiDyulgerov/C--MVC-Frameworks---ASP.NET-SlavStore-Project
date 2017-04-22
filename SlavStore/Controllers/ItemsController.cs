@@ -6,8 +6,10 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using AutoMapper;
 using Microsoft.AspNet.Identity;
 using SlavStore.Models;
+using SlavStore.Models.BindingModels;
 using SlavStore.Models.ViewModels;
 
 namespace SlavStore.Controllers
@@ -41,9 +43,18 @@ namespace SlavStore.Controllers
         [Authorize]
         public ActionResult Create()
         {
+            var userId = User.Identity.GetUserId();
+            Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
+
+            if (store == null)
+            {
+                return RedirectToAction("Create", "Stores");
+            }
+
             CreateItemViewModel model = new CreateItemViewModel();
             List<Category> categories = db.Categories.ToList();
             model.Categories = categories;
+
             return View(model);
         }
 
@@ -53,7 +64,7 @@ namespace SlavStore.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CreateItemViewModel model)
+        public ActionResult Create(CreateItemBindingModel model)
         {
 
             var userId = User.Identity.GetUserId();
@@ -66,19 +77,10 @@ namespace SlavStore.Controllers
             else
             {
                 Category category = db.Categories.FirstOrDefault(c => c.Id == model.Category);
-                Item item = new Item()
-                {
-                    Name = model.Name,
-                    Description = model.Description,
-                    Price = model.Price,
-                    IsNew = model.IsNew,
-                    Quantity = model.Quantity,
-                    Category = category
-                    
-                };
+                Item item = Mapper.Map<CreateItemBindingModel, Item>(model);
                 item.DateAdded = DateTime.Now;
                 item.Seller = store;
-                
+                item.Category = category;
                 if (ModelState.IsValid)
                 {
                     db.Items.Add(item);
@@ -86,9 +88,10 @@ namespace SlavStore.Controllers
                     return RedirectToAction("Index");
                 }
             }
-
-
-            return View(model);
+            CreateItemViewModel vm = Mapper.Map<CreateItemBindingModel,CreateItemViewModel>(model);
+            List<Category> categories = db.Categories.ToList();
+            vm.Categories = categories;
+            return View(vm);
         }
 
         // GET: Item/Edit/5
@@ -103,7 +106,19 @@ namespace SlavStore.Controllers
             {
                 return HttpNotFound();
             }
-            return View(item);
+
+            var userId = User.Identity.GetUserId();
+            Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
+
+            if (item.Seller != store)
+            {
+                //TODO: Popup Error Mesage
+                return RedirectToAction("Index");
+
+            }
+            EditItemViewModel model = Mapper.Map<Item, EditItemViewModel>(item);
+            model.Category = item.Category.Name;
+            return View(model);
         }
 
         // POST: Item/Edit/5
@@ -111,15 +126,27 @@ namespace SlavStore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Description,Price,IsNew,Quantity,Video,DateAdded")] Item item)
+        public ActionResult Edit(EditItemBindingModel model)
         {
+
+            var userId = User.Identity.GetUserId();
+            Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
+            Category category = db.Categories.FirstOrDefault(c => c.Name == model.Category);
+
+            Item item = Mapper.Map<EditItemBindingModel, Item>(model);
+
+            item.Category = category;
+            item.Seller = store;
+
             if (ModelState.IsValid)
             {
                 db.Entry(item).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(item);
+
+            EditItemViewModel vm = Mapper.Map<EditItemBindingModel, EditItemViewModel>(model);
+            return View(vm);
         }
 
         // GET: Item/Delete/5
@@ -134,6 +161,15 @@ namespace SlavStore.Controllers
             {
                 return HttpNotFound();
             }
+            var userId = User.Identity.GetUserId();
+            Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
+
+            if (item.Seller != store)
+            {
+                //TODO: Popup Error Mesage
+                return RedirectToAction("Index");
+
+            }
             return View(item);
         }
 
@@ -143,6 +179,16 @@ namespace SlavStore.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Item item = db.Items.Find(id);
+
+            var userId = User.Identity.GetUserId();
+            Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
+
+            if (item.Seller != store)
+            {
+                //TODO: Popup Error Mesage
+                return RedirectToAction("Index");
+
+            }
             db.Items.Remove(item);
             db.SaveChanges();
             return RedirectToAction("Index");

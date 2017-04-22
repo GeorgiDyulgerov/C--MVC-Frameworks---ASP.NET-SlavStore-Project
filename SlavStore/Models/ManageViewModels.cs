@@ -12,6 +12,9 @@ namespace SlavStore.Models
         public string PhoneNumber { get; set; }
         public bool TwoFactor { get; set; }
         public bool BrowserRemembered { get; set; }
+        public string FullName { get; set; }
+        public string  Addres { get; set; }
+        public Store Store { get; set; }
     }
 
     public class ManageLoginsViewModel
@@ -83,4 +86,12 @@ namespace SlavStore.Models
         public string SelectedProvider { get; set; }
         public ICollection<System.Web.Mvc.SelectListItem> Providers { get; set; }
     }
+
+    public class ChangeInfoViewModel
+    {
+        public string FullName { get; set; }
+        public string Address { get; set; }
+    }
+
+
 }
