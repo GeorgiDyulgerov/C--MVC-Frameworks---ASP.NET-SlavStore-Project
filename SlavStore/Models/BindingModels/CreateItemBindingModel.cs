@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Web;
 
 namespace SlavStore.Models.BindingModels
@@ -20,5 +21,7 @@ namespace SlavStore.Models.BindingModels
         public string Video { get; set; }
 
         public int Category { get; set; }
+
+        public string Image { get; set; }
     }
 }

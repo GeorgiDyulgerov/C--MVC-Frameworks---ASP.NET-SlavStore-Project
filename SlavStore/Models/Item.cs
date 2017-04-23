@@ -13,9 +13,7 @@ namespace SlavStore.Models
         public Item()
         {
             this.Comments = new HashSet<Comment>();
-            this.Images = new HashSet<Image>();
             this.Buyers = new HashSet<ApplicationUser>();
-
         }
 
         [Key]
@@ -38,6 +36,8 @@ namespace SlavStore.Models
 
         public DateTime DateAdded { get; set; }
 
+        public virtual string Image { get; set; }
+
         [Required]
         public virtual Store Seller { get; set; }
 
@@ -45,8 +45,6 @@ namespace SlavStore.Models
         public virtual Category Category { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
-
-        public virtual ICollection<Image> Images { get; set; }
 
         public virtual ICollection<ApplicationUser> Buyers { get; set; }
 

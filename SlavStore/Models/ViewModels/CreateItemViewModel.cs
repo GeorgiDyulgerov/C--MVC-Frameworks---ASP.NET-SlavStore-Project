@@ -19,5 +19,7 @@ namespace SlavStore.Models.ViewModels
         public int Category { get; set; }
 
         public  List<Category> Categories { get; set; }
+
+        public string Image { get; set; }
     }
 }

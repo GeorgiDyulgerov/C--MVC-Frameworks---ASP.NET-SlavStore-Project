@@ -53,8 +53,6 @@ namespace SlavStore.Models
 
         public System.Data.Entity.DbSet<SlavStore.Models.Category> Categories { get; set; }
 
-        public System.Data.Entity.DbSet<SlavStore.Models.Image> Images { get; set; }
-
         public System.Data.Entity.DbSet<SlavStore.Models.Comment> Comments { get; set; }
     }
 }

@@ -25,6 +25,7 @@ namespace SlavStore
                 ex.CreateMap<Item, EditItemViewModel>();
                 ex.CreateMap<EditItemBindingModel, EditItemViewModel>();
                 ex.CreateMap<CreateItemBindingModel, CreateItemViewModel>();
+                ex.CreateMap<Item, HomeViewModel>();
 
             });
         }

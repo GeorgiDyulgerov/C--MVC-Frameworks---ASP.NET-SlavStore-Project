@@ -24,5 +24,7 @@ namespace SlavStore.Models.ViewModels
         public string Category { get; set; }
 
         public DateTime DateAdded { get; set; }
+
+        public string Image { get; set; }
     }
 }

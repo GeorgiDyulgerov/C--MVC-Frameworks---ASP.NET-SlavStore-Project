@@ -51,20 +51,28 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Video)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Video)
-        </dd>
-
-        <dt>
             @Html.DisplayNameFor(model => model.DateAdded)
         </dt>
 
         <dd>
             @Html.DisplayFor(model => model.DateAdded)
         </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Image)
+        </dt>
+
+        <dd>
+            <img src="@Model.Image" alt="@Model.Name" height="200px" />
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Video)
+        </dt>
+
+        <dd>
+            <iframe width="560" height="315" src="http://www.youtube.com/embed/@Model.Video" frameborder="0" allowfullscreen></iframe>
+        </dd>
+
 
     </dl>
 </div>
