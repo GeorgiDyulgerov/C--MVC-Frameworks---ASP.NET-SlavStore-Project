@@ -4,6 +4,77 @@
     ViewBag.Title = "Details";
 }
 
+<div class="jumbotron container">
+    <div class="row">
+        <div class="col-md-5">
+            @if (Model.Image == null)
+            {
+                <img src="https://www.jordans.com/~/media/jordans%20redesign/no-image-found.ashx?h=275&amp;la=en&amp;w=275&amp;hash=F87BC23F17E37D57E2A0B1CC6E2E3EEE312AAD5B" alt="no image" class="col-md-12" />
+            }
+            else
+            {
+                <img src="@Model.Image" alt="@Model.Name" class="col-md-12" />
+            }
+        </div>
+        <div class="col-md-6 col-md-offset-1 panel">
+            <h1>@Html.DisplayFor(model => model.Name)</h1>
+            <h4 class="text-info">@Html.ActionLink("Visit " + @Model.Seller.Name, "Details", "Stores", new { id = Model.Seller.Id }, null)</h4>
+            <hr />
+            <h2 class="text-primary">Price: @Html.DisplayFor(model => model.Price)</h2>
+            <br />
+            <h3 class="text-warning">Quantity: @Html.DisplayFor(model => model.Quantity)</h3>
+            <h3 class="text-warning">
+                Condition:
+                <span>
+                    @if (Model.IsNew)
+                    {
+                    @Html.Raw("New")
+                        ;
+                    }
+                    else
+                    {
+                    @Html.Raw("Used")
+                    }
+                </span>
+            </h3>
+            <h3 class="text-warning">Date added: @Model.DateAdded.ToString("d")</h3>
+            <br />
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-actions no-color">
+                    @if (Request.IsAuthenticated)
+                    {
+                        @Html.ActionLink("Buy Item", "Buy", new { id = Model.Id }, htmlAttributes: new { @class = "btn btn-primary btn-lg" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink", @class = "btn btn-primary btn-lg " })
+                        @Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", @class = "btn btn-primary btn-lg" })
+                    }
+
+                </div>
+            }
+            <hr />
+
+
+        </div>
+    </div>
+    <br />
+    <div class="row well">
+        <div class="col-md-10 col-md-offset-1">
+            <p>@Html.DisplayFor(model => model.Description)</p>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
 <h2>Details</h2>
 
 <div>
@@ -62,20 +133,38 @@
         </dt>
 
         <dd>
-            <img src="@Model.Image" alt="@Model.Name" height="200px" />
+            @if (Model.Image == null)
+            {
+                <img src="https://www.jordans.com/~/media/jordans%20redesign/no-image-found.ashx?h=275&amp;la=en&amp;w=275&amp;hash=F87BC23F17E37D57E2A0B1CC6E2E3EEE312AAD5B" alt="no image" class="col-md-6" />
+            }
+            else
+            {
+                <img src="@Model.Image" alt="@Model.Name" class="col-md-6" />
+            }
         </dd>
+        @if (@Model.Video != null)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.Video)
+            </dt>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Video)
-        </dt>
-
-        <dd>
-            <iframe width="560" height="315" src="http://www.youtube.com/embed/@Model.Video" frameborder="0" allowfullscreen></iframe>
-        </dd>
-
+            <dd>
+                <iframe width="560" height="315" src="http://www.youtube.com/embed/@Model.Video" frameborder="0" allowfullscreen></iframe>
+            </dd>
+        }
 
     </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            @Html.ActionLink("Buy Item", "Buy", new { id = Model.Id }, htmlAttributes: new { @class = "btn btn-default" })
+        </div>
+    }
 </div>
+
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")

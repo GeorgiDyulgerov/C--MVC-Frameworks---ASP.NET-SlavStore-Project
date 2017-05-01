@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -20,6 +21,17 @@ namespace SlavStore.Controllers
 
         // GET: Item
         public ActionResult Index()
+        {
+
+            List<Item> items = db.Items.Where(item=>item.Quantity>0).OrderByDescending(item => item.DateAdded).ToList();
+
+            List<HomeViewModel> model = Mapper.Map<List<Item>, List<HomeViewModel>>(items);
+
+            return View(model);
+        }
+
+        [Authorize(Roles = "Administrator")]
+        public ActionResult List()
         {
             return View(db.Items.ToList());
         }
@@ -88,7 +100,7 @@ namespace SlavStore.Controllers
                     return RedirectToAction("Index");
                 }
             }
-            CreateItemViewModel vm = Mapper.Map<CreateItemBindingModel,CreateItemViewModel>(model);
+            CreateItemViewModel vm = Mapper.Map<CreateItemBindingModel, CreateItemViewModel>(model);
             List<Category> categories = db.Categories.ToList();
             vm.Categories = categories;
             return View(vm);
@@ -191,6 +203,27 @@ namespace SlavStore.Controllers
             }
             db.Items.Remove(item);
             db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        // POST: Item/Buy/5
+        [Authorize]
+        [HttpGet]
+        //[ValidateAntiForgeryToken]
+        public ActionResult Buy(int id)
+        {
+
+            Item item = db.Items.Find(id);
+
+            var userId = User.Identity.GetUserId();
+            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == userId);
+
+            user.ItemsBought.Add(item);
+            db.Entry(user).State = EntityState.Modified;
+            item.Quantity -= 1;
+            db.Entry(item).State = EntityState.Modified;
+            db.SaveChanges();
+
             return RedirectToAction("Index");
         }
 

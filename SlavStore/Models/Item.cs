@@ -37,11 +37,9 @@ namespace SlavStore.Models
         public DateTime DateAdded { get; set; }
 
         public virtual string Image { get; set; }
-
-        [Required]
+        
         public virtual Store Seller { get; set; }
-
-        [Required]
+        
         public virtual Category Category { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
