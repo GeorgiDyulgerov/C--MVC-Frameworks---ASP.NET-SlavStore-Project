@@ -6,22 +6,25 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
 using SlavStore.Models;
 
 namespace SlavStore.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize]
     public class CommentsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Comments
+        [Authorize(Roles = "Administrator")]
         public ActionResult Index()
         {
             return View(db.Comments.ToList());
         }
 
         // GET: Comments/Details/5
+        [Authorize(Roles = "Administrator")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -37,6 +40,7 @@ namespace SlavStore.Controllers
         }
 
         // GET: Comments/Create
+        [Authorize]
         public ActionResult Create()
         {
             return View();
@@ -46,11 +50,17 @@ namespace SlavStore.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Title,Text,Stars")] Comment comment)
+        public ActionResult Create([Bind(Include = "Id,Title,Text,Stars,Item")] Comment comment)
         {
             if (ModelState.IsValid)
             {
+                Item item = db.Items.FirstOrDefault(i => i.Id == comment.Item.Id);
+                var userId = User.Identity.GetUserId();
+                ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == userId);
+                comment.User = user;
+                comment.Item = item;
                 db.Comments.Add(comment);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -60,6 +70,7 @@ namespace SlavStore.Controllers
         }
 
         // GET: Comments/Edit/5
+        [Authorize(Roles = "Administrator")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -78,6 +89,7 @@ namespace SlavStore.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Title,Text,Stars")] Comment comment)
         {
@@ -91,6 +103,7 @@ namespace SlavStore.Controllers
         }
 
         // GET: Comments/Delete/5
+        [Authorize(Roles = "Administrator")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -106,6 +119,7 @@ namespace SlavStore.Controllers
         }
 
         // POST: Comments/Delete/5
+        [Authorize(Roles = "Administrator")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
