@@ -1,32 +1,31 @@
-﻿@model SlavStore.Models.Store
-
+﻿@model List<SlavStore.Models.Item>
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "MyItems";
 }
 
-<h2>@Html.DisplayFor(model => model.Name)</h2>
+<h2>MyItems</h2>
 
 <div>
     <hr />
-    <h3>Items for sale:</h3>
-    @foreach (var item in Model.ItemsForSale)
+    @foreach (var item in Model)
     {
         <div class="row well">
             <div class="col-md-5">
                 @if (item.Image == null)
                 {
-                    <img src="https://www.jordans.com/~/media/jordans%20redesign/no-image-found.ashx?h=275&amp;la=en&amp;w=275&amp;hash=F87BC23F17E37D57E2A0B1CC6E2E3EEE312AAD5B" alt="no image" class="col-md-12" style="max-height: 800%;max-width: 70%"/>
+                    <img src="https://www.jordans.com/~/media/jordans%20redesign/no-image-found.ashx?h=275&amp;la=en&amp;w=275&amp;hash=F87BC23F17E37D57E2A0B1CC6E2E3EEE312AAD5B" alt="no image" class="col-md-12" style="max-height: 800%;max-width: 70%" />
                 }
                 else
                 {
-                    <img src="@item.Image" alt="@item.Name" class="col-md-12" style="max-height: 800%;max-width: 70%"/>
+                    <img src="@item.Image" alt="@item.Name" class="col-md-12" style="max-height: 800%;max-width: 70%" />
                 }
             </div>
-            <div class="col-md-6 col-md-offset-1 panel">
+            <div class="col-md-7 panel">
                 <h1>@item.Name</h1>
-                <hr/>
+                <h4 class="text-info">@Html.ActionLink("Visit " + @item.Seller.Name, "Details", "Stores", new { id = item.Seller.Id }, null)</h4>
+                <hr />
                 <h2 class="text-primary">Price: @item.Price</h2>
-                <br/>
+                <br />
                 <h3 class="text-warning">
                     @if (item.Description.Length > 150)
                     {
@@ -37,16 +36,12 @@
                         @item.Description
                     }
                 </h3>
-                <br/>
+                <br />
                 <p>
                     @Html.ActionLink("Details »", "Details", "Items", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-default btn-lg" })
                 </p>
             </div>
         </div>
-        <hr/>
+        <hr />
     }
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

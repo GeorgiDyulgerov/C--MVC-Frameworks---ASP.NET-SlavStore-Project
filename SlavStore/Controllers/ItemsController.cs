@@ -224,7 +224,18 @@ namespace SlavStore.Controllers
             db.Entry(item).State = EntityState.Modified;
             db.SaveChanges();
 
-            return RedirectToAction("Index");
+            return RedirectToAction("MyItems");
+        }
+
+        // GET: Item/MyItems
+        [Authorize]
+        public ActionResult MyItems()
+        {
+            var userId = User.Identity.GetUserId();
+            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == userId);
+            List<Item> items = user.ItemsBought.ToList();
+
+            return View(items);
         }
 
         protected override void Dispose(bool disposing)

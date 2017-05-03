@@ -1,14 +1,14 @@
-﻿@model SlavStore.Models.Comment
+﻿@using SlavStore.Models
+@model SlavStore.Models.Comment
 
 @{
     ViewBag.Title = "Details";
 }
-
-<h2>Details</h2>
-
-<div>
-    <h4>Comment</h4>
-    <hr />
+<div class="panel">
+    <h4>
+        @(@Model.User.FullName != null ? Html.Raw("Comment by " + @Model.User.FullName) : Html.Raw("Comment by " + @Model.User.UserName))
+    </h4>
+    <hr/>
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Title)
@@ -23,7 +23,7 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Text)
+            @Html.DisplayTextFor(model => model.Text)
         </dd>
 
         <dt>
@@ -31,12 +31,11 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Stars)
+            @for (int i = 0; i < @Model.Stars; i++)
+            {
+                <span class="glyphicon glyphicon-star"></span>
+            }
         </dd>
 
     </dl>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

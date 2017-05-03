@@ -364,6 +364,7 @@
     <Content Include="Views\Manage\ChangeInfo.cshtml" />
     <Content Include="Views\Items\List.cshtml" />
     <Content Include="Views\Comments\AddComment.cshtml" />
+    <Content Include="Views\Items\MyItems.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

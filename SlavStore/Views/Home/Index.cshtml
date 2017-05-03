@@ -6,49 +6,51 @@
 @model List<HomeViewModel>
 <div class="jumbotron">
     <h1>Slav Store</h1>
-    <p class="lead">All the Slavnes Items you can find.</p>
+    <p class="lead">All the Slav Items you can find.</p>
     <p>
-        <a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a>
+        @Html.ActionLink("All Items »", "Index", "Items",null, htmlAttributes: new { @class = "btn btn-primary btn-lg" })
     </p>
 </div>
 <div class="container jumbotron">
+    <h1 class="text-center">Most recent items</h1>
     @foreach (var item in Model)
     {
 
-        if (count % 3 == 0)
+        if (count%3 == 0)
         {
             @Html.Raw("<div class=\"row\">")
+            @Html.Raw("<hr/>")
         }
         <div class="col-md-4 center-block text-center active">
             <h2>@item.Name</h2>
             @if (item.Image == null)
             {
-                <img src="https://www.jordans.com/~/media/jordans%20redesign/no-image-found.ashx?h=275&amp;la=en&amp;w=275&amp;hash=F87BC23F17E37D57E2A0B1CC6E2E3EEE312AAD5B" alt="no image" class="col-md-6 col-xs-12" />
+                <img src="https://www.jordans.com/~/media/jordans%20redesign/no-image-found.ashx?h=275&amp;la=en&amp;w=275&amp;hash=F87BC23F17E37D57E2A0B1CC6E2E3EEE312AAD5B" alt="no image" class="col-md-6 col-xs-12"/>
             }
             else
             {
-                <img src="@item.Image" alt="@item.Name" class="col-md-6 col-xs-12" />
+                <img src="@item.Image" alt="@item.Name" class="col-md-6 col-xs-12"/>
             }
 
             <div class="col-md-6">
-                <h4>Price: @item.Price</h4>
-                <p>
+                <h3>Price: @item.Price</h3>
+                <h4>
                     @if (item.Description.Length > 50)
                     {
-                        @item.Description.Substring(0, 50)<span> ...</span>
+                        @item.Description.Substring(0, 50)<span>...</span>
                     }
                     else
                     {
                         @item.Description
                     }
-                </p>
+                </h4>
                 <p>
-                    @Html.ActionLink("Details »", "Details", "Items", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-default" })
+                    @Html.ActionLink("Details »", "Details", "Items", new {id = item.Id}, htmlAttributes: new {@class = "btn btn-default"})
                 </p>
             </div>
         </div>
         count++;
-        if (count % 3 == 0 || count == Model.Count)
+        if (count%3 == 0 || count == Model.Count)
         {
             @Html.Raw("</div>")
         }

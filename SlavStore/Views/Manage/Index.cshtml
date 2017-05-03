@@ -19,7 +19,10 @@
             @Html.DisplayTextFor(model => model.Addres)
         </dd>
         <dt></dt>
-        <dd>@Html.ActionLink("Change personal info", "ChangeInfo", null, htmlAttributes: new { @class = "btn btn-default" })</dd>
+        <dd>@Html.ActionLink("Change personal info", "ChangeInfo", null, htmlAttributes: new {@class = "btn btn-default"})</dd>
+        <br/>
+        <dt>My Items:</dt>
+        <dd>@Html.ActionLink("See them", "MyItems","Items",null, htmlAttributes: new { @class = "btn btn-default" })</dd>
         <hr />
 
         @if (Model.Store != null)

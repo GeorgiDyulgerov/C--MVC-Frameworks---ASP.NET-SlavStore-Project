@@ -63,7 +63,7 @@ namespace SlavStore.Controllers
                 comment.Item = item;
                 db.Comments.Add(comment);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Details","Items",new {id=item.Id});
             }
 
             return View(comment);
