@@ -1,0 +1,8 @@
+﻿@model IEnumerable<SlavStore.Models.Category>
+
+<ul class="list-group">
+    @foreach (var category in Model)
+    {
+        @Html.ActionLink(@category.Name, "Index", "Items", new { categoryId = category.Id }, htmlAttributes: new { @class = "list-group-item" })
+    }
+</ul>

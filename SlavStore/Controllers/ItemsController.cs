@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
+using PagedList;
 using SlavStore.Models;
 using SlavStore.Models.BindingModels;
 using SlavStore.Models.ViewModels;
@@ -20,14 +21,24 @@ namespace SlavStore.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Item
-        public ActionResult Index()
+        public ActionResult Index(int? page,int? categoryId,string search)
         {
 
             List<Item> items = db.Items.Where(item=>item.Quantity>0).OrderByDescending(item => item.DateAdded).ToList();
-
+            if (search != null )
+            {
+                items = items.FindAll(item => item.Name.ToLower().Contains(search.ToLower()) || item.Description.ToLower().Contains(search.ToLower()) || item.Category.Name.ToLower().Contains(search.ToLower()));
+            }
+            if (categoryId != null)
+            {
+                items = items.FindAll(item => item.Category.Id == categoryId);
+            }
             List<HomeViewModel> model = Mapper.Map<List<Item>, List<HomeViewModel>>(items);
 
-            return View(model);
+            var pageNumber = page ?? 1;
+            var onePageItems = model.ToPagedList(pageNumber, 9);
+            ViewBag.OnePageOfItems = onePageItems;
+            return View();
         }
 
         [Authorize(Roles = "Administrator")]

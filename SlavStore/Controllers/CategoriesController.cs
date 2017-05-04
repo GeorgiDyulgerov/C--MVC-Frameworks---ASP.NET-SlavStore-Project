@@ -10,18 +10,20 @@ using SlavStore.Models;
 
 namespace SlavStore.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    
     public class CategoriesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Categories
+        [Authorize(Roles = "Administrator")]
         public ActionResult Index()
         {
             return View(db.Categories.ToList());
         }
 
         // GET: Categories/Details/5
+        [Authorize(Roles = "Administrator")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -37,6 +39,7 @@ namespace SlavStore.Controllers
         }
 
         // GET: Categories/Create
+        [Authorize(Roles = "Administrator")]
         public ActionResult Create()
         {
             return View();
@@ -47,6 +50,7 @@ namespace SlavStore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public ActionResult Create([Bind(Include = "Id,Name,Description")] Category category)
         {
             if (ModelState.IsValid)
@@ -60,6 +64,7 @@ namespace SlavStore.Controllers
         }
 
         // GET: Categories/Edit/5
+        [Authorize(Roles = "Administrator")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -78,6 +83,7 @@ namespace SlavStore.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,Description")] Category category)
         {
@@ -91,6 +97,7 @@ namespace SlavStore.Controllers
         }
 
         // GET: Categories/Delete/5
+        [Authorize(Roles = "Administrator")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -108,12 +115,18 @@ namespace SlavStore.Controllers
         // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public ActionResult DeleteConfirmed(int id)
         {
             Category category = db.Categories.Find(id);
             db.Categories.Remove(category);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        public ActionResult CategoriesList()
+        {
+            return PartialView(db.Categories.ToList());
         }
 
         protected override void Dispose(bool disposing)
