@@ -8,7 +8,6 @@ namespace SlavStore.Models
 {
     public class Comment
     {
-        //TODO: Add Anotations
         [Key]
         public int Id { get; set; }
         

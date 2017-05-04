@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using SlavStore.Helpers;
 using SlavStore.Models;
 
 namespace SlavStore.Controllers
@@ -244,6 +245,7 @@ namespace SlavStore.Controllers
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
+                this.AddNotification("Successfuly changed password.", NotificationType.SUCCESS);
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
             }
             AddErrors(result);

@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using SlavStore.Helpers;
 using SlavStore.Models;
 
 namespace SlavStore.Controllers
@@ -63,6 +64,7 @@ namespace SlavStore.Controllers
                 comment.Item = item;
                 db.Comments.Add(comment);
                 db.SaveChanges();
+                this.AddNotification("Successfuly Commented", NotificationType.SUCCESS);
                 return RedirectToAction("Details","Items",new {id=item.Id});
             }
 
@@ -97,6 +99,7 @@ namespace SlavStore.Controllers
             {
                 db.Entry(comment).State = EntityState.Modified;
                 db.SaveChanges();
+                this.AddNotification("Successfuly Edited Comment "+comment.Title, NotificationType.SUCCESS);
                 return RedirectToAction("Index");
             }
             return View(comment);
@@ -127,6 +130,7 @@ namespace SlavStore.Controllers
             Comment comment = db.Comments.Find(id);
             db.Comments.Remove(comment);
             db.SaveChanges();
+            this.AddNotification("Successfuly Deleted" + comment.Title, NotificationType.WARNING);
             return RedirectToAction("Index");
         }
 

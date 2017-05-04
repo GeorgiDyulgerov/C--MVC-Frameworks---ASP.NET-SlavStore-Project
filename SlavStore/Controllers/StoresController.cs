@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using SlavStore.Helpers;
 using SlavStore.Models;
 
 namespace SlavStore.Controllers
@@ -16,13 +13,14 @@ namespace SlavStore.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-
-
         // GET: Stores
+        [Authorize(Roles = "Administrator")]
         public ActionResult Index()
         {
             return View(db.Stores.ToList());
         }
+
+        
 
         // GET: Stores/Details/5
         public ActionResult Details(int? id)
@@ -56,15 +54,14 @@ namespace SlavStore.Controllers
             ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == currentUserId);
             if (user.MyStore == null)
             {
-
                 store.Owner = user;
 
                 if (store.Name != null && store.Owner != null)
                 {
-
                     db.Stores.Add(store);
                     db.SaveChanges();
-                    return RedirectToAction("Index");
+                    this.AddNotification("Store Created", NotificationType.SUCCESS);
+                    return RedirectToAction("Details","Stores",new {id = user.MyStore.Id});
                 }
             }
             return View(store);
@@ -84,7 +81,7 @@ namespace SlavStore.Controllers
             }
             string currentUserId = User.Identity.GetUserId();
             ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == currentUserId);
-            if (store.Owner != user)
+            if (store.Owner != user && !User.IsInRole("Administrator"))
             {
                 return RedirectToAction("Index");
             }
@@ -105,7 +102,6 @@ namespace SlavStore.Controllers
 
             if (store.Id!=null && store.Name!=null && store.Owner!=null)
             {
-
                 db.Entry(store).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

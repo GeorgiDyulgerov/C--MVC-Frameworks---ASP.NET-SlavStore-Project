@@ -2,7 +2,6 @@
 @{
     ViewBag.Title = "Manage";
 }
-
 <h2>@ViewBag.Title.</h2>
 
 <p class="text-success">@ViewBag.StatusMessage</p>
@@ -25,14 +24,20 @@
         <dd>@Html.ActionLink("See them", "MyItems","Items",null, htmlAttributes: new { @class = "btn btn-default" })</dd>
         <hr />
 
-        @if (Model.Store != null)
-        {
-            <dt>Store:</dt>
-            <dd>
 
-                @Html.ActionLink("Visit " + @Model.Store.Name, "Details", "Stores", new { id = @Model.Store.Id }, null)
-            </dd>
-        }
+            <dt>Store:</dt>
+        <dd>
+            @if (Model.Store != null)
+            {
+            @Html.ActionLink("Visit " + @Model.Store.Name, "Details", "Stores", new {id = @Model.Store.Id}, null)
+            }
+            else
+            {
+                @Html.ActionLink("Create store", "Create", "Stores", null, null)
+
+            }
+        </dd>
+        
 
         <dt>Password:</dt>
         <dd>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using SlavStore.Helpers;
 using SlavStore.Models;
 
 namespace SlavStore.Controllers
@@ -57,6 +58,7 @@ namespace SlavStore.Controllers
             {
                 db.Categories.Add(category);
                 db.SaveChanges();
+                this.AddNotification("Created Category "+category.Name, NotificationType.SUCCESS);
                 return RedirectToAction("Index");
             }
 
@@ -90,7 +92,7 @@ namespace SlavStore.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(category).State = EntityState.Modified;
-                db.SaveChanges();
+                db.SaveChanges(); this.AddNotification("Successfuly Edited " + category.Name, NotificationType.SUCCESS);
                 return RedirectToAction("Index");
             }
             return View(category);
@@ -121,6 +123,7 @@ namespace SlavStore.Controllers
             Category category = db.Categories.Find(id);
             db.Categories.Remove(category);
             db.SaveChanges();
+            this.AddNotification("Successfuly Deleted "+ category.Name, NotificationType.WARNING);
             return RedirectToAction("Index");
         }
 

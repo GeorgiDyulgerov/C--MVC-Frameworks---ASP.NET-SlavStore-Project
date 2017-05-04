@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
 using PagedList;
+using SlavStore.Helpers;
 using SlavStore.Models;
 using SlavStore.Models.BindingModels;
 using SlavStore.Models.ViewModels;
@@ -71,6 +72,7 @@ namespace SlavStore.Controllers
 
             if (store == null)
             {
+                this.AddNotification("You need to create store first", NotificationType.WARNING);
                 return RedirectToAction("Create", "Stores");
             }
 
@@ -95,6 +97,7 @@ namespace SlavStore.Controllers
 
             if (store == null)
             {
+                this.AddNotification("You need to create store first", NotificationType.WARNING); this.AddNotification("You need to create store first", NotificationType.ERROR);
                 return RedirectToAction("Create", "Stores");
             }
             else
@@ -108,6 +111,7 @@ namespace SlavStore.Controllers
                 {
                     db.Items.Add(item);
                     db.SaveChanges();
+                    this.AddNotification("Item " + item.Name +" successfully created.", NotificationType.SUCCESS);
                     return RedirectToAction("Index");
                 }
             }
@@ -135,7 +139,6 @@ namespace SlavStore.Controllers
 
             if (item.Seller != store)
             {
-                //TODO: Popup Error Mesage
                 return RedirectToAction("Index");
 
             }
@@ -165,6 +168,7 @@ namespace SlavStore.Controllers
             {
                 db.Entry(item).State = EntityState.Modified;
                 db.SaveChanges();
+                this.AddNotification("Successfully edited" +item.Name, NotificationType.SUCCESS);
                 return RedirectToAction("Index");
             }
 
@@ -189,7 +193,7 @@ namespace SlavStore.Controllers
 
             if (item.Seller != store)
             {
-                //TODO: Popup Error Mesage
+                this.AddNotification("You havo NO PERMITION", NotificationType.ERROR);
                 return RedirectToAction("Index");
 
             }
@@ -208,12 +212,13 @@ namespace SlavStore.Controllers
 
             if (item.Seller != store)
             {
-                //TODO: Popup Error Mesage
+                this.AddNotification("You havo NO PERMITION", NotificationType.ERROR);
                 return RedirectToAction("Index");
 
             }
             db.Items.Remove(item);
             db.SaveChanges();
+            this.AddNotification("Successfully Deleted " + item.Name, NotificationType.WARNING);
             return RedirectToAction("Index");
         }
 
@@ -234,7 +239,7 @@ namespace SlavStore.Controllers
             item.Quantity -= 1;
             db.Entry(item).State = EntityState.Modified;
             db.SaveChanges();
-
+            this.AddNotification("Congratulations you successfuly bought " + item.Name, NotificationType.SUCCESS);
             return RedirectToAction("MyItems");
         }
 

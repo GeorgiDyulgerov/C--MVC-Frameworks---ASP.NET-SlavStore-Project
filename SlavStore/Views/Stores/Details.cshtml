@@ -1,4 +1,5 @@
-﻿@model SlavStore.Models.Store
+﻿@using Microsoft.AspNet.Identity
+@model SlavStore.Models.Store
 
 @{
     ViewBag.Title = "Details";
@@ -7,7 +8,7 @@
 <h2>@Html.DisplayFor(model => model.Name)</h2>
 
 <div>
-    <hr />
+    <hr/>
     <h3>Items for sale:</h3>
     @foreach (var item in Model.ItemsForSale)
     {
@@ -15,11 +16,11 @@
             <div class="col-md-5">
                 @if (item.Image == null)
                 {
-                    <img src="https://www.jordans.com/~/media/jordans%20redesign/no-image-found.ashx?h=275&amp;la=en&amp;w=275&amp;hash=F87BC23F17E37D57E2A0B1CC6E2E3EEE312AAD5B" alt="no image" class="col-md-12" style="max-height: 800%;max-width: 70%"/>
+                    <img src="https://www.jordans.com/~/media/jordans%20redesign/no-image-found.ashx?h=275&amp;la=en&amp;w=275&amp;hash=F87BC23F17E37D57E2A0B1CC6E2E3EEE312AAD5B" alt="no image" class="col-md-12" style="max-height: 800%; max-width: 70%"/>
                 }
                 else
                 {
-                    <img src="@item.Image" alt="@item.Name" class="col-md-12" style="max-height: 800%;max-width: 70%"/>
+                    <img src="@item.Image" alt="@item.Name" class="col-md-12" style="max-height: 800%; max-width: 70%"/>
                 }
             </div>
             <div class="col-md-6 col-md-offset-1 panel">
@@ -39,14 +40,18 @@
                 </h3>
                 <br/>
                 <p>
-                    @Html.ActionLink("Details »", "Details", "Items", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-default btn-lg" })
+                    @Html.ActionLink("Details »", "Details", "Items", new {id = item.Id}, htmlAttributes: new {@class = "btn btn-default btn-lg"})
                 </p>
             </div>
         </div>
         <hr/>
     }
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+@if (@Model.Owner.Id == User.Identity.GetUserId())
+{
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+        @Html.ActionLink("Delete", "Delete", new { id = Model.Id })
+    </p>
+}
+

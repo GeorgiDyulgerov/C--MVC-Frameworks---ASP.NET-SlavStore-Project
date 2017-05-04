@@ -11,19 +11,20 @@
 
 <div class="container" style="margin-top: 2em">
     <div class="row">
-
-
+        
         <div class="col-md-3" id="divDisplay">
         </div>
 
-
-
         <div class="col-md-9  jumbotron">
             <div class="row">
+                @if (@ViewBag.OnePageOfItems)
+                {
+                    <h1>No items</h1>
+                }
                 @foreach (var item in @ViewBag.OnePageOfItems)
                 {
 
-                    if (count % 3 == 0)
+                    if (count%3 == 0)
                     {
                         @Html.Raw("<div class=\"row\">")
                     }
@@ -32,22 +33,22 @@
                         <div style="height: 15em">
                             @if (item.Image == null)
                             {
-                                <img src="https://www.jordans.com/~/media/jordans%20redesign/no-image-found.ashx?h=275&amp;la=en&amp;w=275&amp;hash=F87BC23F17E37D57E2A0B1CC6E2E3EEE312AAD5B" alt="no image" class="col-md-10 col-md-offset-1" height="100%" width="80%" />
+                                <img src="https://www.jordans.com/~/media/jordans%20redesign/no-image-found.ashx?h=275&amp;la=en&amp;w=275&amp;hash=F87BC23F17E37D57E2A0B1CC6E2E3EEE312AAD5B" alt="no image" class="col-md-10 col-md-offset-1" height="100%" width="80%"/>
                             }
                             else
                             {
-                                <img src="@item.Image" alt="@item.Name" class="col-md-10 col-md-offset-1" height="100%" width="80%" />
+                                <img src="@item.Image" alt="@item.Name" class="col-md-10 col-md-offset-1" height="100%" width="80%"/>
                             }
                         </div>
                         <div class="col-md-12">
                             <h4>Price: @item.Price</h4>
                             <p>
-                                @Html.ActionLink("Details »", "Details", "Items", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-default" })
+                                @Html.ActionLink("Details »", "Details", "Items", new {id = item.Id}, htmlAttributes: new {@class = "btn btn-default"})
                             </p>
                         </div>
                     </div>
                     count++;
-                    if (count % 3 == 0 || count == ViewBag.OnePageOfItems.Count)
+                    if (count%3 == 0 || count == ViewBag.OnePageOfItems.Count)
                     {
                         @Html.Raw("</div>")
                     }

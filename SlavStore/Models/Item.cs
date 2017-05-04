@@ -8,8 +8,6 @@ namespace SlavStore.Models
 {
     public class Item
     {
-        //TODO: Add Anotations
-
         public Item()
         {
             this.Comments = new HashSet<Comment>();
