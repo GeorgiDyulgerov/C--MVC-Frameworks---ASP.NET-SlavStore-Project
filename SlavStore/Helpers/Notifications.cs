@@ -4,13 +4,6 @@ using System.Web.Mvc;
 
 namespace SlavStore.Helpers
 {
-    /*                                                                      *
-     *      This extension was derive from Brad Christie's answer           *
-     *      on StackOverflow.                                               *
-     *                                                                      *
-     *      The original code can be found at:                              *
-     *      http://stackoverflow.com/a/18338264/998328                      *
-     *                                                                      */
 
     public static class NotificationExtensions
     {

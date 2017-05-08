@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using SlavStore.Data;
 using SlavStore.Helpers;
 using SlavStore.Models;
 
@@ -11,7 +12,7 @@ namespace SlavStore.Controllers
     [Authorize]
     public class StoresController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private SlavStoreDbContext db = new SlavStoreDbContext();
 
         // GET: Stores
         [Authorize(Roles = "Administrator")]
@@ -100,7 +101,7 @@ namespace SlavStore.Controllers
             ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == currentUserId);
             store.Owner = user;
 
-            if (store.Id!=null && store.Name!=null && store.Owner!=null)
+            if (store.Name!=null && store.Owner!=null)
             {
                 db.Entry(store).State = EntityState.Modified;
                 db.SaveChanges();

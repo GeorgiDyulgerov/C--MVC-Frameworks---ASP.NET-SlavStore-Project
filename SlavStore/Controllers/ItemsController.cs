@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
 using PagedList;
+using SlavStore.Data;
 using SlavStore.Helpers;
 using SlavStore.Models;
 using SlavStore.Models.BindingModels;
@@ -19,7 +20,7 @@ namespace SlavStore.Controllers
 {
     public class ItemsController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private SlavStoreDbContext db = new SlavStoreDbContext();
 
         // GET: Item
         public ActionResult Index(int? page,int? categoryId,string search)

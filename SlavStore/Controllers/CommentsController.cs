@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using SlavStore.Data;
 using SlavStore.Helpers;
 using SlavStore.Models;
 
@@ -15,7 +16,7 @@ namespace SlavStore.Controllers
     [Authorize]
     public class CommentsController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private SlavStoreDbContext db = new SlavStoreDbContext();
 
         // GET: Comments
         [Authorize(Roles = "Administrator")]

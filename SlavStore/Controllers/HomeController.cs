@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
+using SlavStore.Data;
 using SlavStore.Models;
 using SlavStore.Models.ViewModels;
 
@@ -11,7 +12,7 @@ namespace SlavStore.Controllers
 {
     public class HomeController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private SlavStoreDbContext db = new SlavStoreDbContext();
 
         public ActionResult Index()
         {

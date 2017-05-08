@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using SlavStore.Data;
 using SlavStore.Helpers;
 using SlavStore.Models;
 
@@ -14,7 +15,7 @@ namespace SlavStore.Controllers
     
     public class CategoriesController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private SlavStoreDbContext db = new SlavStoreDbContext();
 
         // GET: Categories
         [Authorize(Roles = "Administrator")]
