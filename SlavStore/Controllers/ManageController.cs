@@ -8,7 +8,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using SlavStore.Data;
-using SlavStore.Helpers;
+using SlavStore.Utillities.Notifications;
 using SlavStore.Models;
 
 namespace SlavStore.Controllers

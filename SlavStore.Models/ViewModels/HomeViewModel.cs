@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace SlavStore.Models.ViewModels
+﻿namespace SlavStore.Models.ViewModels
 {
     public class HomeViewModel
     {
@@ -16,7 +11,5 @@ namespace SlavStore.Models.ViewModels
         public string Image { get; set; }
 
         public decimal Price { get; set; }
-
-        
     }
 }

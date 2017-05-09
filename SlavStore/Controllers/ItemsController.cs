@@ -11,34 +11,39 @@ using AutoMapper;
 using Microsoft.AspNet.Identity;
 using PagedList;
 using SlavStore.Data;
-using SlavStore.Helpers;
+using SlavStore.Utillities.Notifications;
 using SlavStore.Models;
 using SlavStore.Models.BindingModels;
 using SlavStore.Models.ViewModels;
+using SlavStore.Services;
 
 namespace SlavStore.Controllers
 {
     public class ItemsController : Controller
     {
         private SlavStoreDbContext db = new SlavStoreDbContext();
+        private IItemsService service;
+
+        public ItemsController(IItemsService service)
+        {
+            this.service = service;
+        }
 
         // GET: Item
-        public ActionResult Index(int? page,int? categoryId,string search)
+        public ActionResult Index(int? page, int? categoryId, string search)
         {
 
-            List<Item> items = db.Items.Where(item=>item.Quantity>0).OrderByDescending(item => item.DateAdded).ToList();
-            if (search != null )
+            List<Item> items = service.GetItems();
+            if (search != null)
             {
-                items = items.FindAll(item => item.Name.ToLower().Contains(search.ToLower()) || item.Description.ToLower().Contains(search.ToLower()) || item.Category.Name.ToLower().Contains(search.ToLower()));
+                items = service.SearchItems(items, search);
             }
             if (categoryId != null)
             {
-                items = items.FindAll(item => item.Category.Id == categoryId);
+                items = service.GetItemsByCategory(items, categoryId);
             }
-            List<HomeViewModel> model = Mapper.Map<List<Item>, List<HomeViewModel>>(items);
 
-            var pageNumber = page ?? 1;
-            var onePageItems = model.ToPagedList(pageNumber, 9);
+            var onePageItems = service.GetPagedList(items, page);
             ViewBag.OnePageOfItems = onePageItems;
             return View();
         }
@@ -46,7 +51,7 @@ namespace SlavStore.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult List()
         {
-            return View(db.Items.ToList());
+            return View(service.GetAllItems());
         }
 
         // GET: Item/Details/5
@@ -56,12 +61,12 @@ namespace SlavStore.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Item item = db.Items.Find(id);
-            if (item == null)
+            if (service.IsItemNull(id))
             {
                 return HttpNotFound();
             }
-            return View(item);
+
+            return View(service.GetItem(id));
         }
 
         // GET: Item/Create
@@ -69,17 +74,14 @@ namespace SlavStore.Controllers
         public ActionResult Create()
         {
             var userId = User.Identity.GetUserId();
-            Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
 
-            if (store == null)
+            if (service.HasStore(userId))
             {
                 this.AddNotification("You need to create store first", NotificationType.WARNING);
                 return RedirectToAction("Create", "Stores");
             }
 
-            CreateItemViewModel model = new CreateItemViewModel();
-            List<Category> categories = db.Categories.ToList();
-            model.Categories = categories;
+            CreateItemViewModel model = service.FillCreateItemViewModel(userId);
 
             return View(model);
         }
@@ -92,59 +94,46 @@ namespace SlavStore.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(CreateItemBindingModel model)
         {
-
             var userId = User.Identity.GetUserId();
-            Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
 
-            if (store == null)
+            if (service.HasStore(userId))
             {
                 this.AddNotification("You need to create store first", NotificationType.WARNING); this.AddNotification("You need to create store first", NotificationType.ERROR);
                 return RedirectToAction("Create", "Stores");
             }
             else
             {
-                Category category = db.Categories.FirstOrDefault(c => c.Id == model.Category);
-                Item item = Mapper.Map<CreateItemBindingModel, Item>(model);
-                item.DateAdded = DateTime.Now;
-                item.Seller = store;
-                item.Category = category;
                 if (ModelState.IsValid)
                 {
-                    db.Items.Add(item);
-                    db.SaveChanges();
-                    this.AddNotification("Item " + item.Name +" successfully created.", NotificationType.SUCCESS);
+                    service.Create(model, userId);
+                    this.AddNotification("Item " + model.Name + " successfully created.", NotificationType.SUCCESS);
                     return RedirectToAction("Index");
                 }
             }
-            CreateItemViewModel vm = Mapper.Map<CreateItemBindingModel, CreateItemViewModel>(model);
-            List<Category> categories = db.Categories.ToList();
-            vm.Categories = categories;
+            CreateItemViewModel vm = service.FillCreateItemViewModel(userId, model);
+
             return View(vm);
         }
 
         // GET: Item/Edit/5
         public ActionResult Edit(int? id)
         {
+            var userId = User.Identity.GetUserId();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Item item = db.Items.Find(id);
-            if (item == null)
+            if (service.IsItemNull(id))
             {
                 return HttpNotFound();
             }
-
-            var userId = User.Identity.GetUserId();
-            Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
-
-            if (item.Seller != store)
+            if (!service.IsCurrentUserStore(userId, id) && !User.IsInRole("Administrator"))
             {
                 return RedirectToAction("Index");
-
             }
-            EditItemViewModel model = Mapper.Map<Item, EditItemViewModel>(item);
-            model.Category = item.Category.Name;
+
+            var model = service.FillEditItemViewModel(id);
+
             return View(model);
         }
 
@@ -157,48 +146,49 @@ namespace SlavStore.Controllers
         {
 
             var userId = User.Identity.GetUserId();
-            Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
-            Category category = db.Categories.FirstOrDefault(c => c.Name == model.Category);
-
-            Item item = Mapper.Map<EditItemBindingModel, Item>(model);
-
-            item.Category = category;
-            item.Seller = store;
-
+            if (!service.IsCurrentUserStore(userId, model.Id) && !User.IsInRole("Administrator"))
+            {
+                return RedirectToAction("Index");
+            }
             if (ModelState.IsValid)
             {
+                Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
+                Category category = db.Categories.FirstOrDefault(c => c.Name == model.Category);
+                Item item = AutoMapper.Mapper.Map<EditItemBindingModel, Item>(model);
+
+                item.Category = category;
+                item.Seller = store;
                 db.Entry(item).State = EntityState.Modified;
                 db.SaveChanges();
-                this.AddNotification("Successfully edited" +item.Name, NotificationType.SUCCESS);
+                this.AddNotification("Successfully edited " + model.Name, NotificationType.SUCCESS);
                 return RedirectToAction("Index");
             }
 
-            EditItemViewModel vm = Mapper.Map<EditItemBindingModel, EditItemViewModel>(model);
+            var vm = service.FillEditItemViewModel(model);
+
             return View(vm);
         }
 
         // GET: Item/Delete/5
         public ActionResult Delete(int? id)
         {
+            var userId = User.Identity.GetUserId();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Item item = db.Items.Find(id);
-            if (item == null)
+            if (service.IsItemNull(id))
             {
                 return HttpNotFound();
             }
-            var userId = User.Identity.GetUserId();
-            Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
-
-            if (item.Seller != store)
+            if (!service.IsCurrentUserStore(userId,id) && !User.IsInRole("Administrator"))
             {
                 this.AddNotification("You havo NO PERMITION", NotificationType.ERROR);
                 return RedirectToAction("Index");
 
             }
-            return View(item);
+
+            return View(service.GetItem(id));
         }
 
         // POST: Item/Delete/5
@@ -206,20 +196,15 @@ namespace SlavStore.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Item item = db.Items.Find(id);
-
             var userId = User.Identity.GetUserId();
-            Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
-
-            if (item.Seller != store)
+            if (service.IsCurrentUserStore(userId,id) && !User.IsInRole("Administrator"))
             {
                 this.AddNotification("You havo NO PERMITION", NotificationType.ERROR);
                 return RedirectToAction("Index");
-
             }
-            db.Items.Remove(item);
-            db.SaveChanges();
-            this.AddNotification("Successfully Deleted " + item.Name, NotificationType.WARNING);
+            service.Delete(id);
+
+            this.AddNotification("Successfully Deleted!", NotificationType.WARNING);
             return RedirectToAction("Index");
         }
 
@@ -229,18 +214,14 @@ namespace SlavStore.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult Buy(int id)
         {
-
-            Item item = db.Items.Find(id);
-
             var userId = User.Identity.GetUserId();
-            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == userId);
+            if (service.IsItemNull(id))
+            {
+                return HttpNotFound();
+            }
+            service.Buy(id, userId);
 
-            user.ItemsBought.Add(item);
-            db.Entry(user).State = EntityState.Modified;
-            item.Quantity -= 1;
-            db.Entry(item).State = EntityState.Modified;
-            db.SaveChanges();
-            this.AddNotification("Congratulations you successfuly bought " + item.Name, NotificationType.SUCCESS);
+            this.AddNotification("Congratulations you successfuly bought the item.", NotificationType.SUCCESS);
             return RedirectToAction("MyItems");
         }
 
@@ -249,10 +230,8 @@ namespace SlavStore.Controllers
         public ActionResult MyItems()
         {
             var userId = User.Identity.GetUserId();
-            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == userId);
-            List<Item> items = user.ItemsBought.ToList();
 
-            return View(items);
+            return View(service.GetMyItems(userId));
         }
 
         protected override void Dispose(bool disposing)

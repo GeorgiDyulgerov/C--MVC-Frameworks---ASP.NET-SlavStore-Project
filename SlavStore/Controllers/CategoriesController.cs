@@ -7,15 +7,23 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using SlavStore.Data;
-using SlavStore.Helpers;
+using SlavStore.Utillities.Notifications;
 using SlavStore.Models;
+using SlavStore.Services;
+using SlavStore.Services.Interfaces;
 
 namespace SlavStore.Controllers
 {
-    
+
     public class CategoriesController : Controller
     {
         private SlavStoreDbContext db = new SlavStoreDbContext();
+        private ICategoriesService service;
+
+        public CategoriesController(ICategoriesService service)
+        {
+            this.service = service;
+        }
 
         // GET: Categories
         [Authorize(Roles = "Administrator")]
@@ -57,9 +65,8 @@ namespace SlavStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Categories.Add(category);
-                db.SaveChanges();
-                this.AddNotification("Created Category "+category.Name, NotificationType.SUCCESS);
+                service.Create(category);
+                this.AddNotification("Created Category " + category.Name, NotificationType.SUCCESS);
                 return RedirectToAction("Index");
             }
 
@@ -92,8 +99,8 @@ namespace SlavStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(category).State = EntityState.Modified;
-                db.SaveChanges(); this.AddNotification("Successfuly Edited " + category.Name, NotificationType.SUCCESS);
+                service.Edit(category);
+                this.AddNotification("Successfuly Edited " + category.Name, NotificationType.SUCCESS);
                 return RedirectToAction("Index");
             }
             return View(category);
@@ -121,10 +128,8 @@ namespace SlavStore.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult DeleteConfirmed(int id)
         {
-            Category category = db.Categories.Find(id);
-            db.Categories.Remove(category);
-            db.SaveChanges();
-            this.AddNotification("Successfuly Deleted "+ category.Name, NotificationType.WARNING);
+
+            this.AddNotification("Successfuly Deleted!", NotificationType.WARNING);
             return RedirectToAction("Index");
         }
 

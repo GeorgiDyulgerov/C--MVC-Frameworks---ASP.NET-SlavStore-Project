@@ -6,10 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 using Microsoft.AspNet.Identity;
 using SlavStore.Data;
-using SlavStore.Helpers;
+using SlavStore.Utillities.Notifications;
 using SlavStore.Models;
+using SlavStore.Services;
 
 namespace SlavStore.Controllers
 {
@@ -17,6 +19,12 @@ namespace SlavStore.Controllers
     public class CommentsController : Controller
     {
         private SlavStoreDbContext db = new SlavStoreDbContext();
+        private ICommentsService service;
+
+        public CommentsController(ICommentsService service)
+        {
+            this.service = service;
+        }
 
         // GET: Comments
         [Authorize(Roles = "Administrator")]
@@ -49,8 +57,6 @@ namespace SlavStore.Controllers
         }
 
         // POST: Comments/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -58,15 +64,10 @@ namespace SlavStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                Item item = db.Items.FirstOrDefault(i => i.Id == comment.Item.Id);
                 var userId = User.Identity.GetUserId();
-                ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == userId);
-                comment.User = user;
-                comment.Item = item;
-                db.Comments.Add(comment);
-                db.SaveChanges();
+                service.Create(comment,userId);
                 this.AddNotification("Successfuly Commented", NotificationType.SUCCESS);
-                return RedirectToAction("Details","Items",new {id=item.Id});
+                return RedirectToAction("Details","Items", new { id = comment.Item.Id });
             }
 
             return View(comment);
@@ -89,8 +90,6 @@ namespace SlavStore.Controllers
         }
 
         // POST: Comments/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize(Roles = "Administrator")]
         [ValidateAntiForgeryToken]
@@ -98,8 +97,7 @@ namespace SlavStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(comment).State = EntityState.Modified;
-                db.SaveChanges();
+                service.Edit(comment);
                 this.AddNotification("Successfuly Edited Comment "+comment.Title, NotificationType.SUCCESS);
                 return RedirectToAction("Index");
             }
@@ -128,10 +126,8 @@ namespace SlavStore.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Comment comment = db.Comments.Find(id);
-            db.Comments.Remove(comment);
-            db.SaveChanges();
-            this.AddNotification("Successfuly Deleted" + comment.Title, NotificationType.WARNING);
+            service.Delete(id);
+            this.AddNotification("Successfuly Deleted!", NotificationType.WARNING);
             return RedirectToAction("Index");
         }
 

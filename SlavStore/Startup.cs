@@ -20,13 +20,12 @@ namespace SlavStore
         {
             Mapper.Initialize(ex =>
             {
-                ex.CreateMap<CreateItemBindingModel, Item>().ForMember(m=>m.Category,opt=>opt.Ignore());
+                ex.CreateMap<CreateItemBindingModel, Item>().ForMember(m => m.Category, opt => opt.Ignore());
                 ex.CreateMap<EditItemBindingModel, Item>().ForMember(m => m.Category, opt => opt.Ignore());
                 ex.CreateMap<Item, EditItemViewModel>();
                 ex.CreateMap<EditItemBindingModel, EditItemViewModel>();
                 ex.CreateMap<CreateItemBindingModel, CreateItemViewModel>();
                 ex.CreateMap<Item, HomeViewModel>();
-
             });
         }
     }

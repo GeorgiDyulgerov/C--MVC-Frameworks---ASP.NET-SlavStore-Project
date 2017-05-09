@@ -4,8 +4,9 @@ using System.Net;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using SlavStore.Data;
-using SlavStore.Helpers;
+using SlavStore.Utillities.Notifications;
 using SlavStore.Models;
+using SlavStore.Services;
 
 namespace SlavStore.Controllers
 {
@@ -13,15 +14,21 @@ namespace SlavStore.Controllers
     public class StoresController : Controller
     {
         private SlavStoreDbContext db = new SlavStoreDbContext();
+        private IStoresService service;
+
+        public StoresController(IStoresService service)
+        {
+            this.service = service;
+        }
 
         // GET: Stores
         [Authorize(Roles = "Administrator")]
         public ActionResult Index()
         {
-            return View(db.Stores.ToList());
+            return View(service.GetStores());
         }
 
-        
+
 
         // GET: Stores/Details/5
         public ActionResult Details(int? id)
@@ -30,82 +37,87 @@ namespace SlavStore.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Store store = db.Stores.Find(id);
-            if (store == null)
+            if (service.IsStoreNull(id))
             {
                 return HttpNotFound();
             }
-            return View(store);
+            return View(service.GetStore(id));
         }
 
         // GET: Stores/Create
         public ActionResult Create()
         {
+            string currentUserId = User.Identity.GetUserId();
+            if (service.CurrentUserHasStore(currentUserId))
+            {
+                this.AddNotification("You already have a store", NotificationType.ERROR);
+                return RedirectToAction("Index","Home");
+            }
             return View();
         }
 
         // POST: Stores/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Name", Exclude = "Id,Owner")] Store store)
+        public ActionResult Create([Bind(Include = "Name,Id,Owner")] Store store)
         {
             string currentUserId = User.Identity.GetUserId();
-            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == currentUserId);
-            if (user.MyStore == null)
-            {
-                store.Owner = user;
 
-                if (store.Name != null && store.Owner != null)
-                {
-                    db.Stores.Add(store);
-                    db.SaveChanges();
-                    this.AddNotification("Store Created", NotificationType.SUCCESS);
-                    return RedirectToAction("Details","Stores",new {id = user.MyStore.Id});
-                }
+            if (service.CurrentUserHasStore(currentUserId))
+            {
+                this.AddNotification("You already have a store", NotificationType.ERROR);
+                return RedirectToAction("Index");
             }
+            if (store.Name!=null)
+            {
+                service.Create(store, currentUserId);
+
+                this.AddNotification("Store Created", NotificationType.SUCCESS);
+                return RedirectToAction("Create","Items");
+            }
+
             return View(store);
         }
 
         // GET: Stores/Edit/5
         public ActionResult Edit(int? id)
         {
+            string currentUserId = User.Identity.GetUserId();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Store store = db.Stores.Find(id);
-            if (store == null)
+            if (service.IsStoreNull(id))
             {
                 return HttpNotFound();
             }
-            string currentUserId = User.Identity.GetUserId();
-            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == currentUserId);
-            if (store.Owner != user && !User.IsInRole("Administrator"))
+            if (!service.IsCurrentUserStore(id,currentUserId) && !User.IsInRole("Administrator"))
             {
-                return RedirectToAction("Index");
+                this.AddNotification("You have no permition", NotificationType.ERROR);
+                return RedirectToAction("Index","Home");
             }
 
-            return View(store);
+            return View(service.GetStore(id));
         }
 
         // POST: Stores/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name",Exclude = "Owner")] Store store)
+        public ActionResult Edit([Bind(Include = "Id,Name,Owner")] Store store)
         {
             string currentUserId = User.Identity.GetUserId();
-            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == currentUserId);
-            store.Owner = user;
+            if (!service.IsCurrentUserStore(store.Id, currentUserId) && !User.IsInRole("Administrator"))
+            {
+                this.AddNotification("You have no permition", NotificationType.ERROR);
+                return RedirectToAction("Index","Home");
+            }
 
-            if (store.Name!=null && store.Owner!=null)
+            if (ModelState.IsValid)
             {
                 db.Entry(store).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                this.AddNotification("Store "+store.Name+" Edited", NotificationType.SUCCESS);
+                return RedirectToAction("Details","Stores",new {id=store.Id});
             }
             return View(store);
         }
@@ -113,22 +125,21 @@ namespace SlavStore.Controllers
         // GET: Stores/Delete/5
         public ActionResult Delete(int? id)
         {
+            string currentUserId = User.Identity.GetUserId();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Store store = db.Stores.Find(id);
-            if (store == null)
+            if (service.IsStoreNull(id))
             {
                 return HttpNotFound();
             }
-            string currentUserId = User.Identity.GetUserId();
-            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == currentUserId);
-            if (store.Owner != user)
+            if (!service.IsCurrentUserStore(id,currentUserId) && !User.IsInRole("Administrator"))
             {
                 return RedirectToAction("Index");
             }
-            return View(store);
+
+            return View(service.GetStore(id));
         }
 
         // POST: Stores/Delete/5
@@ -136,15 +147,13 @@ namespace SlavStore.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Store store = db.Stores.Find(id);
             string currentUserId = User.Identity.GetUserId();
-            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == currentUserId);
-            if (store.Owner != user)
+            if (!service.IsCurrentUserStore(id, currentUserId) && !User.IsInRole("Administrator"))
             {
                 return RedirectToAction("Index");
             }
-            db.Stores.Remove(store);
-            db.SaveChanges();
+            service.Delete(id);
+
             return RedirectToAction("Index");
         }
 

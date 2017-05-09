@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 
-namespace SlavStore.Helpers
+namespace SlavStore.Utillities.Notifications
 {
 
     public static class NotificationExtensions
