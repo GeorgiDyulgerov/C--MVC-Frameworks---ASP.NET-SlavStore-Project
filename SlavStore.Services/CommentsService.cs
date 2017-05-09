@@ -22,8 +22,8 @@ namespace SlavStore.Services
 
         public void Edit(Comment comment)
         {
+            Comment updated = this.Comments.GetById(comment.Id);
             this.Comments.Update(comment);
-
         }
 
         public void Delete(int id)

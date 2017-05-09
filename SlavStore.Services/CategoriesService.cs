@@ -33,7 +33,6 @@ namespace SlavStore.Services
         {
             Category category = this.Categories.GetFirstOrNull(c=>c.Id==categoryId);
             this.Categories.Delete(category);
-
         }
 
     }
