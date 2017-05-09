@@ -48,12 +48,6 @@ namespace SlavStore.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Administrator")]
-        public ActionResult List()
-        {
-            return View(service.GetAllItems());
-        }
-
         // GET: Item/Details/5
         public ActionResult Details(int? id)
         {
@@ -197,7 +191,7 @@ namespace SlavStore.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             var userId = User.Identity.GetUserId();
-            if (service.IsCurrentUserStore(userId,id) && !User.IsInRole("Administrator"))
+            if (!service.IsCurrentUserStore(userId,id) && !User.IsInRole("Administrator"))
             {
                 this.AddNotification("You havo NO PERMITION", NotificationType.ERROR);
                 return RedirectToAction("Index");

@@ -1,4 +1,5 @@
-﻿using SlavStore.Models;
+﻿using System.Collections.Generic;
+using SlavStore.Models;
 
 namespace SlavStore.Services.Interfaces
 {
@@ -7,5 +8,6 @@ namespace SlavStore.Services.Interfaces
         void Create(Category category);
         void Delete(int categoryId);
         void Edit(Category category);
+        List<Category> GetCategories();
     }
 }

@@ -85,6 +85,10 @@ namespace SlavStore.Services
         public void Delete(int id)
         {
             Item item = this.Context.Items.Find(id);
+            foreach (var comment in item.Comments.ToList())
+            {
+                this.Context.Comments.Remove(comment);
+            }
             this.Context.Items.Remove(item);
             this.Context.SaveChanges();
         }

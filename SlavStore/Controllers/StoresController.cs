@@ -20,16 +20,7 @@ namespace SlavStore.Controllers
         {
             this.service = service;
         }
-
-        // GET: Stores
-        [Authorize(Roles = "Administrator")]
-        public ActionResult Index()
-        {
-            return View(service.GetStores());
-        }
-
-
-
+       
         // GET: Stores/Details/5
         public ActionResult Details(int? id)
         {
@@ -136,7 +127,8 @@ namespace SlavStore.Controllers
             }
             if (!service.IsCurrentUserStore(id,currentUserId) && !User.IsInRole("Administrator"))
             {
-                return RedirectToAction("Index");
+                this.AddNotification("You have no permition", NotificationType.ERROR);
+                return RedirectToAction("Index","Home");
             }
 
             return View(service.GetStore(id));
@@ -150,11 +142,12 @@ namespace SlavStore.Controllers
             string currentUserId = User.Identity.GetUserId();
             if (!service.IsCurrentUserStore(id, currentUserId) && !User.IsInRole("Administrator"))
             {
-                return RedirectToAction("Index");
+                this.AddNotification("You have no permition", NotificationType.ERROR);
+                return RedirectToAction("Index","Home");
             }
             service.Delete(id);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index","Home");
         }
 
         protected override void Dispose(bool disposing)

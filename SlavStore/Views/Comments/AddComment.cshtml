@@ -1,6 +1,6 @@
 ﻿@model SlavStore.Models.Comment
     <div class="col-md-10 col-lg-offset-1 panel">
-        @using (Html.BeginForm("Create", "Comments"))
+        @using (Html.BeginForm("Create", "Comments",new {area="" }))
         {
             @Html.AntiForgeryToken()
 
