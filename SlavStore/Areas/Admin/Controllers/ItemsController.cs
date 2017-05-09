@@ -11,7 +11,7 @@ namespace SlavStore.Areas.Admin.Controllers
     [Authorize(Roles = "Administrator")]
     public class ItemsController : Controller
     {
-        private SlavStoreDbContext db = new SlavStoreDbContext();
+        private SlavStoreDbContext _slavStoreDb = new SlavStoreDbContext();
         private IItemsService service;
 
         public ItemsController(IItemsService service)
@@ -29,7 +29,7 @@ namespace SlavStore.Areas.Admin.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _slavStoreDb.Dispose();
             }
             base.Dispose(disposing);
         }

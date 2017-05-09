@@ -11,7 +11,7 @@ namespace SlavStore.Areas.Admin.Controllers
     [Authorize(Roles = "Administrator")]
     public class StoresController : Controller
     {
-        private SlavStoreDbContext db = new SlavStoreDbContext();
+        private SlavStoreDbContext _slavStoreDb = new SlavStoreDbContext();
         private IStoresService service;
 
         public StoresController(IStoresService service)

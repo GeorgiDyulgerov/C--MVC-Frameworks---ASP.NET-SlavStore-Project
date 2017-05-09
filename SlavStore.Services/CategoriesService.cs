@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using SlavStore.Data.Interfaces;
 using SlavStore.Models;
 using SlavStore.Services.Interfaces;
 
@@ -8,28 +9,32 @@ namespace SlavStore.Services
 {
     public class CategoriesService : Service, ICategoriesService
     {
+
+        public CategoriesService(IDbContext context) : base(context)
+        {
+        }
+
         public void Create(Category category)
         {
-            this.Context.Categories.Add(category);
-            this.Context.SaveChanges();
+            this.Categories.Insert(category);
         }
 
         public void Edit(Category category)
         {
-            this.Context.Entry(category).State = EntityState.Modified;
-            this.Context.SaveChanges();
+            this.Categories.Update(category);
         }
 
         public List<Category> GetCategories()
         {
-           return this.Context.Categories.ToList();
+           return this.Categories.GetAll().ToList();
         }
 
         public void Delete(int categoryId)
         {
-            Category category = this.Context.Categories.Find(categoryId);
-            this.Context.Categories.Remove(category);
-            this.Context.SaveChanges();
+            Category category = this.Categories.GetFirstOrNull(c=>c.Id==categoryId);
+            this.Categories.Delete(category);
+
         }
+
     }
 }

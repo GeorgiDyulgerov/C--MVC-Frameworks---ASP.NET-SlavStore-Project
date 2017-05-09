@@ -13,7 +13,7 @@ namespace SlavStore.Controllers
 {
     public class HomeController : Controller
     {
-        private SlavStoreDbContext db = new SlavStoreDbContext();
+        private SlavStoreDbContext _slavStoreDb = new SlavStoreDbContext();
         private IHomeService service;
 
         public HomeController(IHomeService service)
@@ -24,7 +24,7 @@ namespace SlavStore.Controllers
         public ActionResult Index()
         {
 
-            //List<Item> items = db.Items.Where(item => item.Quantity > 0).Take(6).OrderByDescending(item => item.DateAdded).ToList();
+            //List<Item> items = _slavStoreDb.Items.Where(item => item.Quantity > 0).Take(6).OrderByDescending(item => item.DateAdded).ToList();
 
             //List<HomeViewModel> model = Mapper.Map<List<Item>, List<HomeViewModel>>(items);
             var model = this.service.GetHomeItems();

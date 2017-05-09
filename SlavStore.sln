@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlavStore.Data", "SlavStore
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlavStore.Utillities", "SlavStore.Utillities\SlavStore.Utillities.csproj", "{348E9188-DECE-4B4C-8CD5-6D8EE4830EDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlavStore.Tests", "SlavStore.Tests\SlavStore.Tests.csproj", "{66C59D5B-0178-4C7D-A912-7ED73BF71EC4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{348E9188-DECE-4B4C-8CD5-6D8EE4830EDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{348E9188-DECE-4B4C-8CD5-6D8EE4830EDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{348E9188-DECE-4B4C-8CD5-6D8EE4830EDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66C59D5B-0178-4C7D-A912-7ED73BF71EC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66C59D5B-0178-4C7D-A912-7ED73BF71EC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66C59D5B-0178-4C7D-A912-7ED73BF71EC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66C59D5B-0178-4C7D-A912-7ED73BF71EC4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

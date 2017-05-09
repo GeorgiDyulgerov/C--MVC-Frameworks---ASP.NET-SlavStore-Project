@@ -1,3 +1,5 @@
+using SlavStore.Data;
+using SlavStore.Data.Interfaces;
 using SlavStore.Services;
 using SlavStore.Services.Interfaces;
 
@@ -64,6 +66,7 @@ namespace SlavStore.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
+            kernel.Bind<IDbContext>().To<SlavStoreDbContext>();
             kernel.Bind<IHomeService>().To<HomeService>();
             kernel.Bind<ICommentsService>().To<CommentsService>();
             kernel.Bind<ICategoriesService>().To<CategoriesService>();

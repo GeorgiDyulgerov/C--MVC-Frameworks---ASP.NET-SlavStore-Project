@@ -18,7 +18,7 @@ namespace SlavStore.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-        private SlavStoreDbContext db = new SlavStoreDbContext();
+        private SlavStoreDbContext _slavStoreDb = new SlavStoreDbContext();
 
         public ManageController()
         {
@@ -68,7 +68,7 @@ namespace SlavStore.Controllers
                 : "";
 
             var userId = User.Identity.GetUserId();
-            var user = db.Users.FirstOrDefault(u => u.Id == userId);
+            var user = _slavStoreDb.Users.FirstOrDefault(u => u.Id == userId);
             var model = new IndexViewModel
             {
                 HasPassword = HasPassword(),
@@ -402,7 +402,7 @@ namespace SlavStore.Controllers
         {
             ChangeInfoViewModel model = new ChangeInfoViewModel();
             var userId = User.Identity.GetUserId();
-            var user = db.Users.FirstOrDefault(u => u.Id == userId);
+            var user = _slavStoreDb.Users.FirstOrDefault(u => u.Id == userId);
             model.FullName = user.FullName;
             model.Address = user.Address;
             return View(model);
@@ -413,14 +413,14 @@ namespace SlavStore.Controllers
         public ActionResult ChangeInfo(ChangeInfoViewModel model)
         {
             var userId = User.Identity.GetUserId();
-            ApplicationUser user = db.Users.FirstOrDefault(u => u.Id == userId);
+            ApplicationUser user = _slavStoreDb.Users.FirstOrDefault(u => u.Id == userId);
 
             if (ModelState.IsValid)
             {
                 user.FullName = model.FullName;
                 user.Address = model.Address;
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
+                _slavStoreDb.Entry(user).State = EntityState.Modified;
+                _slavStoreDb.SaveChanges();
                 return RedirectToAction("Index");
             }
 

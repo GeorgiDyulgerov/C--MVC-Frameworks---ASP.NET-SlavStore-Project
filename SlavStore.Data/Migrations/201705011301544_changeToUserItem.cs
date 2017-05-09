@@ -1,8 +1,7 @@
-namespace SlavStore.Migrations
+using System.Data.Entity.Migrations;
+
+namespace SlavStore.Data.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
-    
     public partial class changeToUserItem : DbMigration
     {
         public override void Up()

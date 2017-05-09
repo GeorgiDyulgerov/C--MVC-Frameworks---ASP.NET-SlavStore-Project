@@ -2,32 +2,36 @@
 using System.Linq;
 using SlavStore.Models;
 using Microsoft.AspNet.Identity;
+using SlavStore.Data.Interfaces;
 
 namespace SlavStore.Services
 {
     public class CommentsService : Service, ICommentsService
     {
+        public CommentsService(IDbContext context) : base(context)
+        {
+        }
         public void Create(Comment comment,string userId)
         {
-            Item item = this.Context.Items.FirstOrDefault(i => i.Id == comment.Item.Id);
-            ApplicationUser user = this.Context.Users.FirstOrDefault(u => u.Id == userId);
+            Item item = this.Items.GetFirstOrNull(i => i.Id == comment.Item.Id);
+            ApplicationUser user = this.Users.GetFirst(u => u.Id == userId);
             comment.User = user;
             comment.Item = item;
-            this.Context.Comments.Add(comment);
-            this.Context.SaveChanges();
+            this.Comments.Insert(comment);
         }
 
         public void Edit(Comment comment)
         {
-            this.Context.Entry(comment).State = EntityState.Modified;
-            this.Context.SaveChanges();
+            this.Comments.Update(comment);
+
         }
 
         public void Delete(int id)
         {
-            Comment comment = this.Context.Comments.Find(id);
-            this.Context.Comments.Remove(comment);
-            this.Context.SaveChanges();
+            Comment comment = this.Comments.GetById(id);
+            this.Comments.Delete(comment);
         }
+
+
     }
 }

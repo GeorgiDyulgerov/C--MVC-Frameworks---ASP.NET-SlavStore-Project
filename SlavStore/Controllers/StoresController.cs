@@ -13,7 +13,7 @@ namespace SlavStore.Controllers
     [Authorize]
     public class StoresController : Controller
     {
-        private SlavStoreDbContext db = new SlavStoreDbContext();
+        private SlavStoreDbContext _slavStoreDb = new SlavStoreDbContext();
         private IStoresService service;
 
         public StoresController(IStoresService service)
@@ -105,8 +105,8 @@ namespace SlavStore.Controllers
 
             if (ModelState.IsValid)
             {
-                db.Entry(store).State = EntityState.Modified;
-                db.SaveChanges();
+                _slavStoreDb.Entry(store).State = EntityState.Modified;
+                _slavStoreDb.SaveChanges();
                 this.AddNotification("Store "+store.Name+" Edited", NotificationType.SUCCESS);
                 return RedirectToAction("Details","Stores",new {id=store.Id});
             }
@@ -154,7 +154,7 @@ namespace SlavStore.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _slavStoreDb.Dispose();
             }
             base.Dispose(disposing);
         }

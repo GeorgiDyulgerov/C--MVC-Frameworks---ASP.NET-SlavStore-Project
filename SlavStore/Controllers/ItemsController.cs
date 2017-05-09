@@ -21,7 +21,7 @@ namespace SlavStore.Controllers
 {
     public class ItemsController : Controller
     {
-        private SlavStoreDbContext db = new SlavStoreDbContext();
+        private SlavStoreDbContext _slavStoreDb = new SlavStoreDbContext();
         private IItemsService service;
 
         public ItemsController(IItemsService service)
@@ -146,14 +146,14 @@ namespace SlavStore.Controllers
             }
             if (ModelState.IsValid)
             {
-                Store store = db.Stores.FirstOrDefault(s => s.Owner.Id == userId);
-                Category category = db.Categories.FirstOrDefault(c => c.Name == model.Category);
+                Store store = _slavStoreDb.Stores.FirstOrDefault(s => s.Owner.Id == userId);
+                Category category = _slavStoreDb.Categories.FirstOrDefault(c => c.Name == model.Category);
                 Item item = AutoMapper.Mapper.Map<EditItemBindingModel, Item>(model);
 
                 item.Category = category;
                 item.Seller = store;
-                db.Entry(item).State = EntityState.Modified;
-                db.SaveChanges();
+                _slavStoreDb.Entry(item).State = EntityState.Modified;
+                _slavStoreDb.SaveChanges();
                 this.AddNotification("Successfully edited " + model.Name, NotificationType.SUCCESS);
                 return RedirectToAction("Index");
             }
@@ -232,7 +232,7 @@ namespace SlavStore.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _slavStoreDb.Dispose();
             }
             base.Dispose(disposing);
         }

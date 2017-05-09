@@ -18,7 +18,7 @@ namespace SlavStore.Controllers
     [Authorize]
     public class CommentsController : Controller
     {
-        private SlavStoreDbContext db = new SlavStoreDbContext();
+        private SlavStoreDbContext _slavStoreDb = new SlavStoreDbContext();
         private ICommentsService service;
 
         public CommentsController(ICommentsService service)
@@ -54,7 +54,7 @@ namespace SlavStore.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _slavStoreDb.Dispose();
             }
             base.Dispose(disposing);
         }

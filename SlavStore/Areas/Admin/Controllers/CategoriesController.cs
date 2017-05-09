@@ -11,7 +11,7 @@ namespace SlavStore.Areas.Admin.Controllers
     [Authorize(Roles = "Administrator")]
     public class CategoriesController : Controller
     {
-        private SlavStoreDbContext db = new SlavStoreDbContext();
+        private SlavStoreDbContext _slavStoreDb = new SlavStoreDbContext();
         private ICategoriesService service;
 
         public CategoriesController(ICategoriesService service)
@@ -32,7 +32,7 @@ namespace SlavStore.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = db.Categories.Find(id);
+            Category category = _slavStoreDb.Categories.Find(id);
             if (category == null)
             {
                 return HttpNotFound();
@@ -68,7 +68,7 @@ namespace SlavStore.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = db.Categories.Find(id);
+            Category category = _slavStoreDb.Categories.Find(id);
             if (category == null)
             {
                 return HttpNotFound();
@@ -97,7 +97,7 @@ namespace SlavStore.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = db.Categories.Find(id);
+            Category category = _slavStoreDb.Categories.Find(id);
             if (category == null)
             {
                 return HttpNotFound();
@@ -119,7 +119,7 @@ namespace SlavStore.Areas.Admin.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _slavStoreDb.Dispose();
             }
             base.Dispose(disposing);
         }

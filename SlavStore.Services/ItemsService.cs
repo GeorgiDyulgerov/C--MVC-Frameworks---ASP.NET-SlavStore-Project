@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using PagedList;
+using SlavStore.Data.Interfaces;
 using SlavStore.Models;
 using SlavStore.Models.BindingModels;
 using SlavStore.Models.ViewModels;
@@ -11,9 +12,13 @@ namespace SlavStore.Services
 {
     public class ItemsService : Service, IItemsService 
     {
+        public ItemsService(IDbContext context) : base(context)
+        {
+        }
+
         public List<Item> GetItems()
         {
-            return this.Context.Items.Where(item=>item.Quantity>0).OrderByDescending(item => item.DateAdded).ToList();
+            return this.Items.GetAll().Where(item=>item.Quantity>0).OrderByDescending(item => item.DateAdded).ToList();
         }
 
         public List<Item> SearchItems(List<Item> items,string search)
@@ -23,35 +28,34 @@ namespace SlavStore.Services
 
         public void Create(CreateItemBindingModel model, string userId)
         {
-            Store store = this.Context.Stores.FirstOrDefault(s => s.Owner.Id == userId);
-            Category category = this.Context.Categories.FirstOrDefault(c => c.Id == model.Category);
+            Store store = this.Stores.GetFirstOrNull(s => s.Owner.Id == userId);
+            Category category = this.Categories.GetFirstOrNull(c => c.Id == model.Category);
             Item item = AutoMapper.Mapper.Map<CreateItemBindingModel, Item>(model);
             item.DateAdded = DateTime.Now;
             item.Seller = store;
             item.Category = category;
-            this.Context.Items.Add(item);
-            this.Context.SaveChanges();
+            this.Items.Insert(item);
         }
 
         public bool IsCurrentUserStore(string userId, int? id)
         {
-            Store store = this.Context.Stores.FirstOrDefault(s => s.Owner.Id == userId);
+            Store store = this.Stores.GetFirstOrNull(s => s.Owner.Id == userId);
 
-            Item item = this.Context.Items.Find(id);
+            Item item = this.Items.GetById(id);
 
             return store == item.Seller;
         }
 
         public bool IsItemNull(int? id)
         {
-            Item item = this.Context.Items.Find(id);
+            Item item = this.Items.GetById(id);
 
             return item == null;
         }
 
         public EditItemViewModel FillEditItemViewModel(int? id)
         {
-            Item item = this.Context.Items.Find(id);
+            Item item = this.Items.GetById(id);
             EditItemViewModel model = AutoMapper.Mapper.Map<Item, EditItemViewModel>(item);
             model.Category = item.Category.Name;
 
@@ -67,8 +71,8 @@ namespace SlavStore.Services
 
         public Item Edit(EditItemBindingModel model, string userId)
         {
-            Store store = this.Context.Stores.FirstOrDefault(s => s.Owner.Id == userId);
-            Category category = this.Context.Categories.FirstOrDefault(c => c.Name == model.Category);
+            Store store = this.Stores.GetFirstOrNull(s => s.Owner.Id == userId);
+            Category category = this.Categories.GetFirst(c => c.Name == model.Category);
             Item item = AutoMapper.Mapper.Map<EditItemBindingModel, Item>(model);
 
             item.Category = category;
@@ -79,34 +83,32 @@ namespace SlavStore.Services
 
         public Item GetItem(int? id)
         {
-            return this.Context.Items.Find(id);
+            return this.Items.GetById(id);
         }
 
         public void Delete(int id)
         {
-            Item item = this.Context.Items.Find(id);
+            Item item = this.Items.GetById(id);
             foreach (var comment in item.Comments.ToList())
             {
-                this.Context.Comments.Remove(comment);
+                this.Comments.Delete(comment);
             }
-            this.Context.Items.Remove(item);
-            this.Context.SaveChanges();
+            this.Items.Delete(item);
         }
 
         public void Buy(int id, string userId)
         {
-            Item item = this.Context.Items.Find(id);
-            ApplicationUser user = this.Context.Users.FirstOrDefault(u => u.Id == userId);
+            Item item = this.Items.GetById(id);
+            ApplicationUser user = this.Users.GetFirstOrNull(u => u.Id == userId);
             user.ItemsBought.Add(item);
-            this.Context.Entry(user).State = EntityState.Modified;
+            this.Users.Update(user);
             item.Quantity -= 1;
-            this.Context.Entry(item).State = EntityState.Modified;
-            this.Context.SaveChanges();
+            this.Items.Update(item);
         }
 
         public List<Item> GetMyItems(string userId)
         {
-            ApplicationUser user = this.Context.Users.FirstOrDefault(u => u.Id == userId);
+            ApplicationUser user = this.Users.GetFirstOrNull(u => u.Id == userId);
             List<Item> items = user.ItemsBought.ToList();
 
             return items;
@@ -114,7 +116,7 @@ namespace SlavStore.Services
 
         public List<Item> GetAllItems()
         {
-            return this.Context.Items.ToList();
+            return this.Items.GetAll().ToList();
         }
 
         public List<Item> GetItemsByCategory(List<Item> items, int? categoryId)
@@ -133,7 +135,7 @@ namespace SlavStore.Services
 
         public bool HasStore(string userId)
         {
-            Store store = this.Context.Stores.FirstOrDefault(s => s.Owner.Id == userId);
+            Store store = this.Stores.GetFirstOrNull(s => s.Owner.Id == userId);
 
             return store == null;
         }
@@ -141,7 +143,7 @@ namespace SlavStore.Services
 
         public CreateItemViewModel FillCreateItemViewModel(string userId)
         {
-            List<Category> categories = this.Context.Categories.ToList();
+            List<Category> categories = this.Categories.GetAll().ToList();
 
             return new CreateItemViewModel() {Categories = categories};
         }
@@ -149,10 +151,12 @@ namespace SlavStore.Services
         public CreateItemViewModel FillCreateItemViewModel(string userId, CreateItemBindingModel model)
         {
             CreateItemViewModel vm = AutoMapper.Mapper.Map<CreateItemBindingModel, CreateItemViewModel>(model);
-            List<Category> categories = this.Context.Categories.ToList();
+            List<Category> categories = this.Categories.GetAll().ToList();
             vm.Categories = categories;
 
             return new CreateItemViewModel() { Categories = categories };
         }
+
+  
     }
 }

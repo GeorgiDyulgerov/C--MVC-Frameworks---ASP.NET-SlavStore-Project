@@ -8,7 +8,7 @@ namespace SlavStore.Controllers
 
     public class CategoriesListController : Controller
     {
-        private SlavStoreDbContext db = new SlavStoreDbContext();
+        private SlavStoreDbContext _slavStoreDb = new SlavStoreDbContext();
         private ICategoriesService service;
 
         public CategoriesListController(ICategoriesService service)
@@ -25,7 +25,7 @@ namespace SlavStore.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _slavStoreDb.Dispose();
             }
             base.Dispose(disposing);
         }

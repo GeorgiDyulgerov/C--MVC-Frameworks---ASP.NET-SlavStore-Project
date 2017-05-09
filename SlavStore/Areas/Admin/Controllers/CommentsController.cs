@@ -14,7 +14,7 @@ namespace SlavStore.Areas.Admin.Controllers
     [Authorize(Roles = "Administrator")]
     public class CommentsController : Controller
     {
-        private SlavStoreDbContext db = new SlavStoreDbContext();
+        private SlavStoreDbContext _slavStoreDb = new SlavStoreDbContext();
         private ICommentsService service;
 
         public CommentsController(ICommentsService service)
@@ -26,7 +26,7 @@ namespace SlavStore.Areas.Admin.Controllers
         
         public ActionResult Index()
         {
-            return View(db.Comments.ToList());
+            return View(_slavStoreDb.Comments.ToList());
         }
 
         // GET: Comments/Details/5
@@ -36,7 +36,7 @@ namespace SlavStore.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Comment comment = db.Comments.Find(id);
+            Comment comment = _slavStoreDb.Comments.Find(id);
             if (comment == null)
             {
                 return HttpNotFound();
@@ -52,7 +52,7 @@ namespace SlavStore.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Comment comment = db.Comments.Find(id);
+            Comment comment = _slavStoreDb.Comments.Find(id);
             if (comment == null)
             {
                 return HttpNotFound();
@@ -83,7 +83,7 @@ namespace SlavStore.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Comment comment = db.Comments.Find(id);
+            Comment comment = _slavStoreDb.Comments.Find(id);
             if (comment == null)
             {
                 return HttpNotFound();
